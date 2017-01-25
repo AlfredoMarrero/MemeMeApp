@@ -23,7 +23,7 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     let memeTextAttribute:[String:Any] = [NSStrokeColorAttributeName: UIColor.black,
                                           NSForegroundColorAttributeName: UIColor.white,
                                           NSFontAttributeName:UIFont (name: "HelveticaNeue-CondensedBlack", size: 40)!,
-                                          NSStrokeWidthAttributeName: 3.0]
+                                          NSStrokeWidthAttributeName: -3.0]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,7 +46,14 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         subscribeToKeyBoardNotifications()
+        self.tabBarController?.tabBar.isHidden = true
     }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        self.tabBarController?.tabBar.isHidden = false
+    }
+    
+    
     
     @IBAction func pickAnImage(_ sender: Any) {
         let pickerController = UIImagePickerController()
@@ -60,7 +67,6 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         pickerController.delegate = self
         pickerController.sourceType = .camera
         present(pickerController, animated: true, completion: nil)
-        
     }
     
     @IBAction func shareMemedImage(_ sender: UIButton) {
@@ -105,6 +111,9 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     }
     
     func keyboardWillShow(notification: NSNotification){
+        if topTextField.isEditing == true {
+            return
+        }
         self.view.frame.origin.y = 0 - getKeyboardHeight(notification)
     }
     
@@ -133,9 +142,9 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
     func generateMemedImage() -> UIImage{
         
         let origin = toolbar.frame.origin.y
-        
+ 
         toolbar.frame.origin.y = 0 - toolbar.frame.size.height
-        
+
         //Render view to an image
         UIGraphicsBeginImageContext(self.view.frame.size)
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
@@ -145,6 +154,6 @@ class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegat
         
         return memedImage
     }
-    
+
 }
 
